@@ -18,7 +18,8 @@
                 android:layout_height="?actionBarSize"
                 android:layout_gravity="bottom"
                 android:layout_marginLeft="@dimen/list_toolbar_side_margin"
-                android:layout_marginRight="@dimen/list_toolbar_side_margin">
+                android:layout_marginRight="@dimen/list_toolbar_side_margin"
+                app:layout_scrollFlags="scroll|enterAlways">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -55,7 +56,8 @@
                 android:paddingLeft="@dimen/list_side_margin"
                 android:paddingRight="@dimen/list_side_margin"
                 android:paddingTop="116dp"
-                android:scrollbarStyle="outsideOverlay" />
+                android:scrollbarStyle="outsideOverlay"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
         </android.support.v4.widget.SwipeRefreshLayout>
     </android.support.design.widget.CoordinatorLayout>
 </layout>
