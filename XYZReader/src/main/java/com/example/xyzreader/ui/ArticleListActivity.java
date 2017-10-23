@@ -7,17 +7,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -26,6 +25,7 @@ import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.data.UpdaterService;
+import com.example.xyzreader.databinding.ActivityArticleListBinding;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,38 +38,44 @@ import java.util.GregorianCalendar;
  * touched, lead to a {@link ArticleDetailActivity} representing item details. On tablets, the
  * activity presents a grid of items as cards.
  */
-public class ArticleListActivity extends ActionBarActivity implements
+public class ArticleListActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = ArticleListActivity.class.toString();
-    private Toolbar mToolbar;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-    private RecyclerView mRecyclerView;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
     // Most time functions can only handle 1902 - 2037
-    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
+    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
+    private ActivityArticleListBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_article_list);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_article_list);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(binding.toolbar);
 
-
-        final View toolbarContainerView = findViewById(R.id.toolbar_container);
-
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         getLoaderManager().initLoader(0, null, this);
 
         if (savedInstanceState == null) {
             refresh();
         }
+
+        binding.fabBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Snackbar.make(binding.getRoot(), "Hello. I am Snackbar!", Snackbar.LENGTH_SHORT)
+                        .setAction("Undo", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                            }
+                        })
+                        .show();
+            }
+        });
     }
 
     private void refresh() {
@@ -102,7 +108,7 @@ public class ArticleListActivity extends ActionBarActivity implements
     };
 
     private void updateRefreshingUI() {
-        mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
+        binding.swipeRefreshLayout.setRefreshing(mIsRefreshing);
     }
 
     @Override
@@ -114,16 +120,16 @@ public class ArticleListActivity extends ActionBarActivity implements
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         Adapter adapter = new Adapter(cursor);
         adapter.setHasStableIds(true);
-        mRecyclerView.setAdapter(adapter);
+        binding.recyclerView.setAdapter(adapter);
         int columnCount = getResources().getInteger(R.integer.list_column_count);
         StaggeredGridLayoutManager sglm =
                 new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(sglm);
+        binding.recyclerView.setLayoutManager(sglm);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mRecyclerView.setAdapter(null);
+        binding.recyclerView.setAdapter(null);
     }
 
     private class Adapter extends RecyclerView.Adapter<ViewHolder> {
@@ -181,8 +187,8 @@ public class ArticleListActivity extends ActionBarActivity implements
             } else {
                 holder.subtitleView.setText(Html.fromHtml(
                         outputFormat.format(publishedDate)
-                        + "<br/>" + " by "
-                        + mCursor.getString(ArticleLoader.Query.AUTHOR)));
+                                + "<br/>" + " by "
+                                + mCursor.getString(ArticleLoader.Query.AUTHOR)));
             }
             holder.thumbnailView.setImageUrl(
                     mCursor.getString(ArticleLoader.Query.THUMB_URL),
