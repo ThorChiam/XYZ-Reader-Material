@@ -10,7 +10,6 @@ import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -66,11 +65,11 @@ public class ArticleListActivity extends AppCompatActivity implements
         binding.fabBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Snackbar.make(binding.getRoot(), "Hello. I am Snackbar!", Snackbar.LENGTH_SHORT)
-                        .setAction("Undo", new View.OnClickListener() {
+                Snackbar.make(binding.getRoot(), "Scroll to top?", Snackbar.LENGTH_SHORT)
+                        .setAction("Yes", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-
+                                binding.recyclerView.smoothScrollToPosition(0);
                             }
                         })
                         .show();
